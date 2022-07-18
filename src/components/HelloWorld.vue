@@ -1,58 +1,84 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div class="container">
+    <h2 class="">Todo app</h2>
+    <div class="card">
+      <div class="card-body col-12">
+        <div class="d-flex justify-content-between">
+          <h3>Enter todo</h3>
+          <button type="button" class="btn btn-primary" style="submit" @click="deleteAll">delete all</button>
+        </div>
+        <div class="py-2">Name:<input v-model="todo.name"></div>
+        <div class="py-2">Description:<input v-model="todo.description"></div>
+        <div class="py-2">Deadline:<input v-model="todo.deadline"></div>
+      <button type="button" class="btn btn-primary" style="submit" @click="create">Create</button>
+      </div>
+    </div>
+    <div class="card mt-3">
+      <div class="card-body col-12">
+        <div class="d-flex justify-content-between">
+          <h3>Todo List</h3>
+          <button type="button" class="btn btn-primary" style="submit" @click="read">Read</button>
+        </div>
+        <table class="table table-borderless">
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Deadline</th>
+            <th></th>
+          </tr>
+          <tr v-for="todo in todos" :key="todo.name">
+            <td height="60">{{ todo.name }}</td>
+            <td>{{ todo.description }}</td>
+            <td>{{ todo.deadline }}</td>
+            <td><button type="btn btn-outline-primary button" class="btn-sm" style="submit" @click="deleteTodo(todo)">Delete</button></td>
+          </tr>
+        </table>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: 'HelloWorld',
-  props: {
-    msg: String
+  data: () => ({
+    todos: [],
+    todo:{
+      name: "",
+      description: "",
+      deadline: ""
+    },
+    name: "todos"
+  }),
+  methods: {
+    read() {
+      const data = sessionStorage.getItem(this.name)
+      if (data) {
+        this.todos = JSON.parse(data)
+      } 
+    },
+    create() {
+      this.todos.push(this.todo)
+      sessionStorage.setItem(this.name, JSON.stringify(this.todos))
+      this.todo = {
+        name: "",
+        description: "",
+        deadline: ""
+      }
+    },
+    deleteTodo(todo) {
+      //名前が一致しないものだけを取得
+      this.todos = this.todos.filter((item) => item.name !== todo.name)
+      sessionStorage.setItem(this.name, JSON.stringify(this.todos))
+    },
+    deleteAll() {
+      sessionStorage.clear()
+      this.todos =[]
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 </style>
